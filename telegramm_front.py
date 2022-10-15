@@ -1,9 +1,9 @@
 from core import *
 from aiogram import Bot, Dispatcher, executor, types
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+from settings import TOKEN
 
-
-TOKEN = '5695015793:AAFTRu_OhNzkQfQ8Ciu6QXyAtII2puT6aNA'
+TOKEN = TOKEN
 bot = Bot(token=TOKEN)
 dp = Dispatcher(bot)
 
