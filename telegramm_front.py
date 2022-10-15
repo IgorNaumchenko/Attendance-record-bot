@@ -25,7 +25,8 @@ async def login(call: types.callback_query):
     userid = call.message.chat.id
     try:
         group_name = Db_Driver_Sqlite3().check_login(userid)
-        await bot.send_message(call.message.chat.id, f'Вы уже зарегистрированы\nУникальный номер вашей группы "{group_name[0][0]}"')
+        await bot.send_message(call.message.chat.id,
+                               f'Вы уже зарегистрированы\nУникальный номер вашей группы "{group_name[0][0]}"')
     except:
         await bot.send_message(call.message.chat.id, 'Усп\nЧто-то пошло не так')
 
