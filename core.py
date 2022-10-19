@@ -1,4 +1,5 @@
 import sqlite3
+import string
 
 
 class Db_Driver_Sqlite3:
@@ -6,6 +7,16 @@ class Db_Driver_Sqlite3:
         self.db_name = db_name
         self.connection = sqlite3.connect(self.db_name)
         self.cursor = self.connection.cursor()
+
+    def create_new_table(self, userid):
+        need = string.ascii_lowercase
+        output = [need[int(i)+1] for i in list(str(userid))]
+        table_name = ''.join(output)
+        create_table = f'CREATE TABLE IF NOT EXISTS {table_name}(userid AUTO_INCREMENT, name TEXT, miss INT);'
+        self.connection.cursor().execute(create_table)
+        self.connection.commit()
+        self.connection.cursor().execute('INSERT INTO chat_id VALUES (?, ?);', (userid, table_name))
+        self.connection.commit()
 
     def create_table(self, table_name):
         create_table = f'CREATE TABLE IF NOT EXISTS {table_name}(userid AUTO_INCREMENT, name TEXT, miss INT);'
@@ -43,3 +54,6 @@ class Db_Driver_Sqlite3:
         group = self.cursor.fetchall()
         return group
 
+    def clear_miss(self, table_name):
+        self.cursor.execute(f'UPDATE {table_name} SET miss=0')
+        self.connection.commit()
