@@ -18,11 +18,6 @@ class Db_Driver_Sqlite3:
         self.connection.cursor().execute('INSERT INTO chat_id VALUES (?, ?);', (userid, table_name))
         self.connection.commit()
 
-    def create_table(self, table_name):
-        create_table = f'CREATE TABLE IF NOT EXISTS {table_name}(userid AUTO_INCREMENT, name TEXT, miss INT);'
-        self.connection.cursor().execute(create_table)
-        self.connection.commit()
-
     def add_miss(self, table_name, insert):
         if len(insert) == 1:
             f_text = tuple([i for j in insert for i in j])
@@ -56,4 +51,8 @@ class Db_Driver_Sqlite3:
 
     def clear_miss(self, table_name):
         self.cursor.execute(f'UPDATE {table_name} SET miss=0')
+        self.connection.commit()
+
+    def clear_one_mis(self, table_name, userid):
+        self.cursor.execute(f'DELETE FROM {table_name} WHERE userid={userid}')
         self.connection.commit()

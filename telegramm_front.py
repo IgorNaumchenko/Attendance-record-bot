@@ -1,8 +1,9 @@
-from core import *
 from aiogram import Bot, Dispatcher, executor, types
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
-from settings import TOKEN
+
 import pshares
+from core import *
+from settings import TOKEN
 
 TOKEN = TOKEN
 bot = Bot(token=TOKEN)
@@ -78,7 +79,6 @@ async def add_group(message: types.Message):
 async def add_miss(message: types.Message):
     get_text = [tuple(i.split('-')) for i in message.text.split('\n')]
     group = Db_Driver_Sqlite3().check_login(message.chat.id)[0][0]
-    print(group)
     for i in get_text:
         Db_Driver_Sqlite3().update_miss(table_name=group, userid=i[0], adding_miss=i[2])
 
