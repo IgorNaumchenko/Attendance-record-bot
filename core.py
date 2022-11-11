@@ -1,5 +1,5 @@
 import string
-from SQLite3_Db_driver import *
+from sqlite3_db_driver import *
 
 
 class Core:
