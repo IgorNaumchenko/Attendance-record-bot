@@ -4,7 +4,7 @@ import logging
 
 import text_messages
 from core import Core
-from settings import TOKEN
+from settings import TOKEN, password
 
 TOKEN = TOKEN
 bot = Bot(token=TOKEN)
@@ -115,7 +115,7 @@ async def clear_one(message: types.Message):
     await bot.send_message(message.chat.id, f'Студент с ID: {stud_id} удалён')
 
 
-@dp.message_handler(commands=['delete_one'])
+@dp.message_handler(commands=['clear_one'])
 async def clear_one_stud(message: types.Message):
     """Обнуление пропусков студента"""
     group_name = core.check_login(message.chat.id)
@@ -178,9 +178,14 @@ async def last_update(call: types.callback_query):
 @dp.message_handler(commands=['clear_all_database'])
 async def clear_all_db(message: types.Message):
     """Очищает базу данных полностью"""
-    tables = core.clear_all_db()
-    await bot.send_message(message.chat.id, f'Вся база данных успешно очищена')
-    await bot.send_message(message.chat.id, ''.join([f'{i}\n' for i in tables]))
+    get_text = message.text.split('/clear_log_file')[1].replace('\n', '')
+    if get_text == password:
+        core.clear_all_db()
+        await bot.send_message(message.chat.id, f'Вся база данных успешно очищена')
+    elif not get_text:
+        await bot.send_message(message.chat.id, 'Пожалуйста, повтори команду и под ней напиши пароль')
+    else:
+        await bot.send_message(message.chat.id, 'Упс...Неверный пароль')
 
 
 @dp.message_handler(commands=['delete_one_table'])
@@ -202,18 +207,26 @@ async def show_all_tables(message: types.Message):
 @dp.message_handler(commands=['clear_log_file'])
 async def del_log_file(message: types.Message):
     """Очистка файла логов"""
-    core.clear_log_file()
-    await bot.send_message(message.chat.id, 'Файл логов удалён')
+    get_text = message.text.split('/clear_log_file')[1].replace('\n', '')
+    if get_text == password:
+        core.clear_log_file()
+        await bot.send_message(message.chat.id, 'Файл логов очищен')
+    elif get_text == '':
+        await bot.send_message(message.chat.id, 'Пожалуйста, повтори команду и введи под ней пароль')
+    else:
+        await bot.send_message(message.chat.id, 'Упс...Неверный пароль')
 
 
 @dp.message_handler()
 async def add_miss(message: types.Message):
     """ Прием сообщений с пропусками """
-    get_text = [tuple(i.split('-')) for i in message.text.split('\n')]
-    group = core.check_login(message.chat.id)[0][0]
-    for i in get_text:
-        core.update_miss(table_name=group, userid=i[0], adding_miss=i[2])
-        logger.info(f'Bot - Добавление пропуска|| группа {group} ID:{i[0]} часов:{i[2]} ')
-
+    try:
+        get_text = [tuple(i.split('-')) for i in message.text.split('\n')]
+        group = core.check_login(message.chat.id)[0][0]
+        for i in get_text:
+            core.update_miss(table_name=group, userid=i[0], adding_miss=i[2])
+            logger.info(f'Bot - Добавление пропуска|| группа {group} ID:{i[0]} часов:{i[2]} ')
+    except:
+        await bot.send_message(message.chat.id, 'Кажется, я не понял команду')
 
 executor.start_polling(dp)
